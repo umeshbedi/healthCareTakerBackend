@@ -1,0 +1,4 @@
+0 actinic keratosis
+1 basal cell carcinoma
+2 dermatofibroma
+3 melanoma

@@ -1,10 +1,12 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from nltk.stem.porter import PorterStemmer
+
+from imgProcess import imageProcess
 
 ds = pd.read_csv("https://raw.githubusercontent.com/umeshbedi/healthCareTakerBackend/refs/heads/main/Symptoms%20-%20Sheet1.csv")
 
@@ -42,11 +44,29 @@ def detect():
     # Step 4: Get the most related disease (highest cosine similarity score)
     most_similar_idx = similarity.argmax()
     most_similar_disease = ds['disease'][most_similar_idx]
-
+    
+    print(most_similar_idx)
     # Output the most similar disease
-    print(f"The most related disease is: {most_similar_disease}")
-    print(f"Tips for Prevention: {ds['preventions'][most_similar_idx]}")
-    return f"""<h1>{most_similar_disease}</h1>
-    <p>{ds['preventions'][most_similar_idx]}</p>
-    """
+    # print(f"The most related disease is: {most_similar_disease}")
+    # print(f"Tips for Prevention: {ds['preventions'][most_similar_idx]}")
+
+
+    return jsonify({
+      "disease":most_similar_disease,
+      "prevention":ds["preventions"][most_similar_idx],
+      "status":"success"
+    })
+
+
+@app.route("/imgprocess")
+def process():
+   data = imageProcess()
+   return jsonify({
+      "status":"success",
+      "data":data
+   })
+
+if __name__ == "__main__":
+  app.run(host='0.0.0.0', port=5000)
+    
 
