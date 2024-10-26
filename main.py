@@ -8,6 +8,8 @@ from nltk.stem.porter import PorterStemmer
 
 from imgProcess import imageProcess
 
+from upload import upload_image
+
 ds = pd.read_csv("https://raw.githubusercontent.com/umeshbedi/healthCareTakerBackend/refs/heads/main/Symptoms%20-%20Sheet1.csv")
 
 # Initialize CountVectorizer with custom tokenizer and Hindi stop words
@@ -58,15 +60,11 @@ def detect():
     })
 
 
-@app.route("/imgprocess")
-def process():
-   data = imageProcess()
-   return jsonify({
-      "status":"success",
-      "data":data
-   })
+@app.route("/upload", methods=["POST"])
+def uploading():
+   return upload_image()
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=5000)
+  app.run(host='0.0.0.0', port=5000, debug=True)
     
 

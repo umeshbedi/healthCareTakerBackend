@@ -1,18 +1,23 @@
 
 from keras.models import load_model  # TensorFlow is required for Keras to work
-
+from flask import jsonify, Flask
 from PIL import Image, ImageOps 
 import numpy as np
 import os
 
+app = Flask(__name__)
 
-keraModel = os.path.abspath("model/keras_model.h5")
-kerasText = os.path.abspath("model/labels.txt")
-testImage = os.path.abspath("model/ISIC_0011478.jpg")
+MODEL_DIR = os.path.join(app.root_path, 'model')
+UPLOAD_DIR = os.path.join(app.root_path, 'uploads')
+
+keraModel = os.path.join(MODEL_DIR, "keras_model.h5")
+kerasText = os.path.join(MODEL_DIR, "labels.txt")
 
 
-def imageProcess():
 
+def imageProcess(filename):
+
+    testImage = os.path.join(UPLOAD_DIR, filename)
     # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
 
@@ -50,8 +55,13 @@ def imageProcess():
     confidence_score = prediction[0][index]
 
     # Print prediction and confidence score
-    return class_name[2:]
-    print("Class:", class_name[2:], end="")
-    print("Confidence Score:", confidence_score)
+    return jsonify({
+        "class": class_name[2:],
+        "confidenceScore":f"{confidence_score}"
+    })
 
-imageProcess()
+    # print("Class:", class_name[2:], end="")
+    # print("Confidence Score:", confidence_score)
+
+
+
