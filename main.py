@@ -6,7 +6,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from nltk.stem.porter import PorterStemmer
 
-from imgProcess import imageProcess
+# from googletrans import Translator
+# translator = Translator()
 
 from upload import upload_image
 
@@ -35,7 +36,19 @@ app = Flask(__name__)
 
 @app.route("/detect", methods=["GET"])
 def detect():
+    
+    # get_user_symptoms = request.args.get("symptoms")
+
+    # detected_lang = translator.detect(get_user_symptoms)
+    
+    # print(detected_lang)
+
+
     user_symptoms = request.args.get("symptoms")
+    
+    # user_symptoms = translator.translate(get_user_symptoms, dest="en")
+
+    
 
     # Vectorize the user input
     user_vector = vectorizer.transform([user_symptoms])
@@ -45,19 +58,34 @@ def detect():
 
     # Step 4: Get the most related disease (highest cosine similarity score)
     most_similar_idx = similarity.argmax()
-    most_similar_disease = ds['disease'][most_similar_idx]
     
-    print(most_similar_idx)
+    most_similar_disease = ds['disease'][most_similar_idx]
+
+    highest_similarity_score = float(similarity[0, most_similar_idx])
+
+
+    
+    # print(most_similar_idx)
     # Output the most similar disease
     # print(f"The most related disease is: {most_similar_disease}")
     # print(f"Tips for Prevention: {ds['preventions'][most_similar_idx]}")
 
-
-    return jsonify({
+    if highest_similarity_score >= 0.1:
+      return jsonify({
       "disease":most_similar_disease,
       "prevention":ds["preventions"][most_similar_idx],
-      "status":"success"
+      "status":"success",
+      "accuracy":f"{(highest_similarity_score*100):.2f}"
     })
+      
+    else:
+      return jsonify({
+      "message":"Sorry! No disease found. Please provide me more than 2 or 3 symptoms.",
+      "status":"not found"
+    })
+      
+
+    
 
 
 @app.route("/upload", methods=["POST"])

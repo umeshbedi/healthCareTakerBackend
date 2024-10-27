@@ -18,6 +18,8 @@ def allowed_file(filename):
 # Route to handle the image upload
 
 def upload_image():
+
+
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
