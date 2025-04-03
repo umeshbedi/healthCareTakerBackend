@@ -1,0 +1,7 @@
+Flask
+pandas
+scikit-learn
+tensorflow  # Required for Keras
+Pillow
+numpy
+nltk
